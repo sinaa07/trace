@@ -1,0 +1,51 @@
+id: train_telemetry_v1
+domain: train
+source_types:
+  - train_telemetry
+version: "1.0.0"
+required_fields:
+  - timestamp
+  - train_id
+entity_fields:
+  - train_id
+unit_fields:
+  - speed
+match:
+  required_any_headers:
+    - train_id
+    - train
+    - speed
+  filename_patterns:
+    - "*telemetry*"
+    - "*train*"
+  content_hints: []
+  min_score: 0.35
+field_map:
+  timestamp:
+    - timestamp
+    - time
+    - recorded_at
+  train_id:
+    - train
+    - train_id
+    - entity_id
+  speed:
+    - speed
+    - speed_kmh
+    - velocity
+  brake_status:
+    - brake
+    - brake_status
+    - braking
+event_rules:
+  - emit: SPEED_SAMPLE
+    required_fields: [timestamp, train_id, speed]
+    entity_id_field: train_id
+    attribute_map:
+      speed: speed
+      brake_status: brake_status
+  - emit: BRAKE_STATUS
+    required_fields: [timestamp, train_id, brake_status]
+    entity_id_field: train_id
+    attribute_map:
+      brake_status: brake_status

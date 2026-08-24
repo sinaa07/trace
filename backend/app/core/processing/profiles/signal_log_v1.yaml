@@ -1,0 +1,52 @@
+id: signal_log_v1
+domain: signalling
+source_types:
+  - signal_log
+version: "1.0.0"
+required_fields:
+  - timestamp
+  - signal_id
+  - state
+entity_fields:
+  - train_id
+  - signal_id
+unit_fields: []
+match:
+  required_any_headers:
+    - signal_id
+    - signal
+    - state
+  filename_patterns:
+    - "*signal*"
+    - "*interlock*"
+  content_hints:
+    - RED
+    - GREEN
+    - YELLOW
+  min_score: 0.35
+field_map:
+  timestamp:
+    - timestamp
+    - time
+    - datetime
+    - event_time
+  signal_id:
+    - signal
+    - signal_id
+    - signal_name
+  state:
+    - state
+    - signal_state
+    - status
+  train_id:
+    - train
+    - train_id
+    - entity_id
+event_rules:
+  - emit: SIGNAL_STATE_CHANGE
+    required_fields: [timestamp, signal_id, state]
+    source_id_field: signal_id
+    entity_id_field: train_id
+    attribute_map:
+      signal: signal_id
+      state: state

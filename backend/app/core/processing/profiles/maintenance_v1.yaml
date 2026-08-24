@@ -1,0 +1,40 @@
+id: maintenance_v1
+domain: track
+source_types:
+  - maintenance
+version: "1.0.0"
+required_fields:
+  - timestamp
+entity_fields:
+  - equipment_id
+unit_fields: []
+match:
+  required_any_headers:
+    - equipment_id
+    - equipment
+    - asset_id
+  filename_patterns:
+    - "*maintenance*"
+    - "*inspect*"
+  content_hints: []
+  min_score: 0.35
+field_map:
+  timestamp:
+    - timestamp
+    - date
+    - inspection_date
+  equipment_id:
+    - equipment
+    - equipment_id
+    - asset_id
+  status:
+    - status
+    - condition
+    - result
+event_rules:
+  - emit: MAINTENANCE_RECORD
+    required_fields: [timestamp]
+    source_id_field: equipment_id
+    attribute_map:
+      status: status
+      equipment_id: equipment_id

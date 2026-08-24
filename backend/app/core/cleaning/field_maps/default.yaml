@@ -1,0 +1,87 @@
+SIGNAL_LOG:
+  timestamp:
+    - timestamp
+    - time
+    - datetime
+    - event_time
+  signal_id:
+    - signal
+    - signal_id
+    - signal_name
+  state:
+    - state
+    - signal_state
+    - status
+  train_id:
+    - train
+    - train_id
+    - entity_id
+
+TRAIN_TELEMETRY:
+  timestamp:
+    - timestamp
+    - time
+    - recorded_at
+  train_id:
+    - train
+    - train_id
+    - entity_id
+  speed:
+    - speed
+    - speed_kmh
+    - velocity
+  brake_status:
+    - brake
+    - brake_status
+    - braking
+
+MAINTENANCE:
+  timestamp:
+    - timestamp
+    - date
+    - inspection_date
+  equipment_id:
+    - equipment
+    - equipment_id
+    - asset_id
+  status:
+    - status
+    - condition
+    - result
+
+WEATHER:
+  timestamp:
+    - timestamp
+    - time
+    - observed_at
+  temperature:
+    - temperature
+    - temp
+    - temp_c
+  rainfall:
+    - rainfall
+    - rain
+    - precipitation_mm
+  visibility:
+    - visibility
+    - visibility_km
+
+WITNESS:
+  timestamp:
+    - timestamp
+    - time
+  statement:
+    - statement
+    - text
+    - line
+    - message
+
+OTHER:
+  timestamp:
+    - timestamp
+    - time
+  text:
+    - text
+    - line
+    - message
+    - value
