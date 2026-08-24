@@ -1,0 +1,147 @@
+TRACE Implementation Updates
+============================
+
+Brief log of features implemented at each iteration.
+Append new entries at the bottom with date and scope.
+
+
+--- Iteration 1 | 2026-08-23 | Phase 1: Case Ingestion ---
+
+SCHEMAS (docs/phase-0/core-schemas.md finalized)
+- Case, EvidenceArtifact, EvidenceRecord, AuditEvent field definitions approved
+- SQLAlchemy models + Pydantic request/response schemas
+
+INFRASTRUCTURE
+- Config module (pydantic-settings): DATABASE_URL, evidence paths, upload limits
+- SQLAlchemy 2.0 database session + FastAPI dependency injection
+- Alembic migration 001: cases, evidence_artifacts, evidence_records, audit_log
+- data/raw/, data/processed/, data/synthetic/ directory layout
+
+STORAGE & PROVENANCE
+- FileStore: atomic raw file writes, SHA-256 verification on re-access, manifest.json
+- ProvenanceService: stream-based SHA-256, custody_history chain
+- AuditService: audit_log entries for all state-changing operations
+- Duplicate hash detection (configurable reject)
+
+PARSERS (backend/app/core/parsers/)
+- CSV (pandas + csv fallback for malformed rows)
+- JSON (array, nested records key)
+- TXT (line-based + log regex patterns)
+- PDF (pypdf text extraction, line records)
+- ParserRegistry with UnsupportedFormatError
+
+RECORD CLEANING (backend/app/core/cleaning/)
+- Schema detection + field mapping via YAML config (field_maps/default.yaml)
+- Timestamp normalization (dateutil + zoneinfo → UTC ISO8601)
+- Entity normalization (train/signal ID aliases)
+- Unit normalization (speed, temperature, etc.)
+- Raw + normalized values preserved in field_provenance
+- Malformed rows retained with is_valid=false and parse_warnings
+
+INGESTION PIPELINE (IngestionOrchestrator)
+- Upload → hash → store raw → parse → clean → persist records → manifest → audit
+- processing_status lifecycle: pending → parsing → cleaning → completed | failed
+
+API ENDPOINTS (live)
+- POST /cases
+- GET /cases/{id}
+- POST /cases/{id}/evidence (multipart upload)
+- GET /evidence/{id}
+- GET /health
+- Standardized error format: {error: {code, message, details}}
+
+SYNTHETIC FIXTURES (data/synthetic/)
+- signal_log.csv, train_telemetry.json, maintenance_report.txt
+- incident_summary.pdf, malformed/missing_columns.csv
+
+TESTS: 16 passing (cases, upload, parsers, cleaner, provenance, e2e ingestion)
+
+NOT YET IMPLEMENTED (deferred to later phases)
+- Event extraction → Event rows
+- Temporal reconstruction / clock correction
+- Neo4j graph construction
+- Agent investigation / MCP tools
+- Evidence Explorer UI
+
+
+--- Iteration 2A | 2026-08-24 | Domain Processing Profiles ---
+
+ARCHITECTURE DECISION
+- Each source_type cleans via its own server-side ProcessingProfile strategy
+- Shared ingest pipeline + shared EvidenceRecord storage (no per-domain private stores)
+- Declared source_type is authoritative; scored matching sets needs_review on conflict/low confidence
+
+PROCESSING PROFILES (backend/app/core/processing/)
+- ProcessingProfile + MatchConfig + ProfileSelection
+- ProcessingProfileRegistry loads versioned YAML profiles
+- Deterministic matcher scores headers / filename / content hints
+- DomainProcessor applies profile field maps, validators, entity/unit transforms
+- Profiles: signal_log_v1, train_telemetry_v1, maintenance_v1, weather_v1, witness_v1, other_v1
+
+INGESTION UPDATES
+- IngestionOrchestrator dispatches DomainProcessor.select_and_clean after parse
+- Artifact fields: profile_id, match_score, match_reasons, needs_review
+- Alembic migration 002_profile_metadata
+- Manifest + audit payload include profile selection metadata
+- RecordCleaner kept as thin compatibility wrapper
+
+TESTS
+- test_processing_profiles.py (registry, scoring, disagreement, domain clean)
+- Ingestion e2e asserts profile_id on signal_log upload
+- Suite: 21 passing
+
+
+--- Iteration 2B | 2026-08-25 | Events & Temporal Engine ---
+
+EVENT MODEL
+- Event SQLAlchemy model + Alembic migration 003_events
+- Schema documented in docs/phase-0/core-schemas.md
+- Fields: event_type, raw/corrected timestamps, temporal_confidence, clock_offset, evidence_refs, timeline_index
+
+EVENT EXTRACTION (backend/app/core/events/)
+- EventRule in ProcessingProfile YAML (event_rules per source_type)
+- EventExtractor: profile-driven rules → EventDraft from valid EvidenceRecords
+- Wired into IngestionOrchestrator after record persist (auto-extract per upload)
+
+TEMPORAL ENGINE (backend/app/core/temporal/)
+- TemporalEngine MVP: metadata clock_offset_seconds + optional incident_time anchor alignment
+- rebuild_case_timeline assigns corrected_timestamp + timeline_index across all case events
+
+API
+- GET /cases/{id}/events (optional event_type, limit filters)
+- GET /cases/{id}/timeline
+- POST /cases/{id}/timeline/rebuild
+
+TESTS
+- test_events_temporal.py (extraction, multi-event telemetry, temporal ordering/anchor)
+- test_timeline_api.py (e2e ingest → events → timeline → rebuild)
+- Suite: 29 passing
+
+NOT YET IMPLEMENTED (deferred to later phases)
+- Neo4j graph construction
+- Agent investigation / MCP tools
+- Evidence Explorer UI
+- Advanced temporal: DTW, drift regression
+
+
+--- Local Dev Setup | 2026-08-25 | Docker + Postgres ---
+
+DOCKER COMPOSE (docker-compose.yml)
+- Postgres host port changed 5432 → 5433 to avoid conflict with local macOS Postgres on 5432
+- Credentials: user trace, password trace_pass, database trace
+- Fresh init: docker compose down -v && docker compose up -d postgres
+
+ENV (backend/.env.example, backend/.env)
+- DATABASE_URL=postgresql+psycopg://trace:trace_pass@localhost:5433/trace
+- Copy .env.example → .env before running backend or Alembic
+
+MIGRATIONS (first-time schema)
+- No manual table creation required; Alembic creates all tables
+- From backend/: alembic upgrade head (applies 001_initial + 002_profile_meta + 003_events)
+- Verify: docker compose exec postgres psql -U trace -d trace -c '\dt'
+- Expected tables: cases, evidence_artifacts, evidence_records, events, audit_log, alembic_version
+
+TROUBLESHOOTING
+- "role trace does not exist" on localhost:5432 → Alembic hit local Postgres, not Docker; use port 5433 or stop local Postgres
+- Password changes in docker-compose.yml only apply on first volume init; use docker compose down -v to recreate
+- DATABASE_URL user/password/port must match docker-compose.yml exactly

@@ -1,0 +1,3 @@
+timestamp,signal,state
+2024-03-15 08:12:04,S42
+2024-03-15 08:12:10,S42,RED,EXTRA_COLUMN

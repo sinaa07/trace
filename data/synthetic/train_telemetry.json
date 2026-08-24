@@ -1,0 +1,18 @@
+{
+  "source_system": "telemetry-gateway",
+  "timezone": "Asia/Kolkata",
+  "records": [
+    {
+      "timestamp": "2024-03-15T08:11:50+05:30",
+      "train_id": "train102",
+      "speed_kmh": "72",
+      "brake_status": "released"
+    },
+    {
+      "timestamp": "2024-03-15T08:12:05+05:30",
+      "train_id": "TRAIN-102",
+      "speed_kmh": "65",
+      "brake_status": "applied"
+    }
+  ]
+}

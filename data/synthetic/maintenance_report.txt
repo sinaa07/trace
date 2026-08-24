@@ -1,0 +1,4 @@
+2024-03-14 18:00:00 [INFO] Inspection completed equipment_id=EQ-441 status=normal
+2024-03-14 18:05:00 [WARN] Minor wear detected equipment_id=EQ-442 status=attention
+# maintenance note
+Track section T12 inspected, no critical defects.
