@@ -66,12 +66,43 @@ Approved field definitions for Phase 1 case ingestion. Mirror in Pydantic (`back
 | `corrected_timestamp` | datetime (tz-aware) | no | After temporal reconstruction |
 | `temporal_confidence` | float | yes | 0..1 confidence in timestamp |
 | `clock_offset_seconds` | float | no | Applied offset for this evidence source |
+| `clock_drift_factor` | float | no | Affine drift multiplier (a in a×t+b) |
 | `source_id` | string | no | Signal/equipment identifier |
 | `entity_id` | string | no | Train or primary entity |
 | `location` | JSON object | no | Inherited from case or record context |
 | `attributes` | JSON object | yes | Domain-specific payload |
 | `evidence_refs` | JSON array | yes | Linked evidence UUID strings |
 | `timeline_index` | integer | no | Order in unified case timeline |
+| `created_at` | datetime | yes | UTC storage |
+
+## Anomaly
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `anomaly_id` | UUID | yes (PK) | Generated server-side |
+| `case_id` | UUID | yes (FK) | Parent case |
+| `rule_id` | string | yes | Rule identifier from YAML config |
+| `severity` | enum | yes | `low`, `medium`, `high`, `critical` |
+| `title` | string | yes | Short summary |
+| `explanation` | string | yes | Human-readable detail |
+| `affected_event_ids` | JSON array | yes | Linked event UUID strings |
+| `evidence_refs` | JSON array | yes | Linked evidence UUID strings |
+| `details` | JSON object | no | Rule-specific payload |
+| `created_at` | datetime | yes | UTC storage |
+
+## EvidenceConflict
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `conflict_id` | UUID | yes (PK) | Generated server-side |
+| `case_id` | UUID | yes (FK) | Parent case |
+| `conflict_type` | string | yes | e.g. `signal_state_mismatch` |
+| `severity` | enum | yes | `low`, `medium`, `high`, `critical` |
+| `title` | string | yes | Short summary |
+| `explanation` | string | yes | Human-readable detail |
+| `event_ids` | JSON array | yes | Contradicting event UUID strings |
+| `evidence_refs` | JSON array | yes | Source evidence UUID strings |
+| `details` | JSON object | no | Conflict-specific payload |
 | `created_at` | datetime | yes | UTC storage |
 
 ## AuditEvent
@@ -93,6 +124,8 @@ Approved field definitions for Phase 1 case ingestion. Mirror in Pydantic (`back
 - EvidenceArtifact 1→N EvidenceRecord
 - EvidenceRecord 1→N Event
 - Case 1→N Event
+- Case 1→N Anomaly
+- Case 1→N EvidenceConflict
 - Case 1→N AuditEvent
 
 ## Validation rules

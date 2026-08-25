@@ -38,6 +38,7 @@ class Event(Base, TimestampMixin):
     )
     temporal_confidence: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
     clock_offset_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    clock_drift_factor: Mapped[float | None] = mapped_column(Float, nullable=True)
     source_id: Mapped[str | None] = mapped_column(String(256), nullable=True)
     entity_id: Mapped[str | None] = mapped_column(String(256), nullable=True, index=True)
     location: Mapped[dict | None] = mapped_column(JSONB, nullable=True)

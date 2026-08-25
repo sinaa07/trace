@@ -1,0 +1,42 @@
+rules:
+  - id: clock_backward
+    severity: high
+    title: Clock moved backward within evidence source
+    description: Corrected timestamps decrease within the same evidence artifact.
+    type: clock_backward
+
+  - id: speed_threshold_exceeded
+    severity: high
+    title: Speed exceeds permitted threshold
+    description: Train speed sample exceeds configured maximum.
+    type: speed_threshold
+    params:
+      max_speed_kmh: 120
+      event_type: SPEED_SAMPLE
+      speed_field: speed
+
+  - id: brake_release_before_application
+    severity: critical
+    title: Brake release recorded before brake application
+    description: For the same train entity, a brake release occurs before application.
+    type: brake_sequence
+    params:
+      event_type: BRAKE_STATUS
+      entity_field: entity_id
+      applied_value: applied
+      released_value: released
+
+  - id: invalid_signal_transition
+    severity: medium
+    title: Invalid signal state transition
+    description: Direct transition between incompatible signal states without intermediate state.
+    type: signal_transition
+    params:
+      event_type: SIGNAL_STATE_CHANGE
+      source_field: source_id
+      state_field: state
+      forbidden_transitions:
+        - from: RED
+          to: GREEN
+        - from: GREEN
+          to: RED

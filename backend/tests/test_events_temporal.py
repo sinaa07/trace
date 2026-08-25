@@ -127,4 +127,5 @@ def test_temporal_anchor_offset():
         )
     ]
     result = engine.reconstruct(drafts, incident_time=incident)
-    assert result.offsets_by_evidence[str(eid)] == pytest.approx(10.0, abs=0.1)
+    model = result.clock_models_by_evidence[str(eid)]
+    assert model.offset_seconds == pytest.approx(10.0, abs=0.1)

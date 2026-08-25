@@ -9,6 +9,7 @@ from app.core.processing.registry import ProcessingProfileRegistry
 from app.core.temporal.engine import TemporalEngine
 from app.models import Event, EvidenceArtifact
 from app.services.audit import AuditService
+from app.services.quality_service import QualityAnalysisService
 from app.services.storage.repositories.case_repo import CaseRepository
 from app.services.storage.repositories.event_repo import EventRepository
 from app.services.storage.repositories.evidence_repo import EvidenceRepository
@@ -31,6 +32,7 @@ class EventService:
         self.profile_registry = profile_registry or ProcessingProfileRegistry()
         self.extractor = extractor or EventExtractor()
         self.temporal_engine = temporal_engine or TemporalEngine()
+        self.quality_service = QualityAnalysisService(db)
 
     def extract_for_artifact(
         self,
@@ -147,9 +149,13 @@ class EventService:
         corrected_by_key: dict[tuple[uuid.UUID, str], tuple] = {}
         for idx, corrected in enumerate(timeline.events):
             key = (corrected.draft.record_id, corrected.draft.event_type)
+            drift = corrected.clock_drift_factor
+            if drift == 1.0:
+                drift = None
             corrected_by_key[key] = (
                 corrected.corrected_timestamp,
                 corrected.clock_offset_seconds,
+                drift,
                 corrected.temporal_confidence,
                 idx,
             )
@@ -159,10 +165,12 @@ class EventService:
             if update:
                 event.corrected_timestamp = update[0]
                 event.clock_offset_seconds = update[1]
-                event.temporal_confidence = update[2]
-                event.timeline_index = update[3]
+                event.clock_drift_factor = update[2]
+                event.temporal_confidence = update[3]
+                event.timeline_index = update[4]
 
         self.event_repo.update_timeline_fields(events)
+        self.quality_service.analyze_case(case_id, actor=actor)
         self.audit.log(
             case_id=case_id,
             entity_type="case",

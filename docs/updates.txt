@@ -145,3 +145,43 @@ TROUBLESHOOTING
 - "role trace does not exist" on localhost:5432 → Alembic hit local Postgres, not Docker; use port 5433 or stop local Postgres
 - Password changes in docker-compose.yml only apply on first volume init; use docker compose down -v to recreate
 - DATABASE_URL user/password/port must match docker-compose.yml exactly
+
+
+--- Iteration 3 | 2026-08-25 | Phase 2 Quality Analysis Completion ---
+
+AFFINE TEMPORAL RECONSTRUCTION
+- TemporalEngine upgraded: corrected_time = drift_factor × raw_epoch + offset_seconds
+- Supports source_metadata.clock_drift_factor + clock_offset_seconds (declared)
+- Supports source_metadata.clock_anchors (2+ points) for inferred affine fit via numpy polyfit
+- Event.clock_drift_factor column added (Alembic 004)
+- Incident-time anchor alignment retained as fallback (drift=1.0)
+
+RULE-BASED ANOMALIES (backend/app/core/anomalies/)
+- YAML rule config: railway_rules.yaml
+- Rules: clock_backward, speed_threshold_exceeded, brake_release_before_application, invalid_signal_transition
+- Anomaly model + persistence; runs automatically after timeline rebuild
+- GET /cases/{id}/anomalies
+
+EVIDENCE CONFLICT DETECTION (backend/app/core/conflicts/)
+- Cross-source detector with alignment tolerance (default 5s)
+- Conflict types: signal_state_mismatch, maintenance_vs_sensor
+- EvidenceConflict model + persistence
+- GET /cases/{id}/conflicts
+
+INTEGRATION
+- QualityAnalysisService wired into EventService.rebuild_case_timeline
+- Audit action: quality.analyzed
+- Alembic migration 004_quality_analysis
+
+SYNTHETIC FIXTURES
+- data/synthetic/conflicting/signal_log_a.csv + signal_log_b.csv
+- data/synthetic/anomaly_high_speed.json
+
+TESTS: 35 passing (+6 quality/temporal tests)
+
+NOT YET IMPLEMENTED
+- Evidence Explorer UI (Phase 1 gap)
+- HypothesisFinding / Finding schemas + investigation engine (Phase 3)
+- Neo4j graph (Phase 4)
+- Advanced temporal: DTW, continuous signal drift regression across anchors
+- Ingestion retry for failed artifacts / needs_review workflow UI

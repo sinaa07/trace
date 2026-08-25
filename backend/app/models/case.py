@@ -42,3 +42,9 @@ class Case(Base, TimestampMixin):
     events = relationship(
         "Event", back_populates="case", cascade="all, delete-orphan"
     )
+    anomalies = relationship(
+        "Anomaly", back_populates="case", cascade="all, delete-orphan"
+    )
+    conflicts = relationship(
+        "EvidenceConflict", back_populates="case", cascade="all, delete-orphan"
+    )

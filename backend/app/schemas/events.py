@@ -17,6 +17,7 @@ class EventResponse(BaseModel):
     corrected_timestamp: datetime | None
     temporal_confidence: float
     clock_offset_seconds: float | None
+    clock_drift_factor: float | None
     source_id: str | None
     entity_id: str | None
     location: dict[str, Any] | None

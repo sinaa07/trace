@@ -6,6 +6,7 @@ Freeze request/response models, status codes, pagination, error format, and auth
 - Evidence: `POST /cases/{id}/evidence`, `GET /evidence/{id}`
 - Timeline: `GET /cases/{id}/timeline`
 - Events: `GET /cases/{id}/events`, `POST /cases/{id}/timeline/rebuild`
+- Quality: `GET /cases/{id}/anomalies`, `GET /cases/{id}/conflicts`
 - Investigation: `POST /cases/{id}/investigate`
 - Findings: `GET /cases/{id}/findings`
 - Hypotheses: `GET /cases/{id}/hypotheses`

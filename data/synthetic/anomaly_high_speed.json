@@ -1,0 +1,10 @@
+{
+  "records": [
+    {
+      "timestamp": "2024-03-15T08:12:00+00:00",
+      "train_id": "TRAIN-102",
+      "speed": "130",
+      "brake_status": "applied"
+    }
+  ]
+}
