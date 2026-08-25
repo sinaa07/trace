@@ -12,6 +12,14 @@ class CaseCreate(BaseModel):
     incident_time: datetime | None = None
     location: dict[str, Any] | None = None
     metadata: dict[str, Any] | None = None
+    created_by: str | None = Field(default=None, max_length=256)
+
+
+class CaseUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=512)
+    incident_time: datetime | None = None
+    location: dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class CaseResponse(BaseModel):
@@ -23,6 +31,7 @@ class CaseResponse(BaseModel):
     location: dict[str, Any] | None
     status: CaseStatus
     metadata: dict[str, Any] | None = Field(default=None, validation_alias="metadata_")
+    created_by: str | None = None
     created_at: datetime
     updated_at: datetime
     evidence_count: int = 0
@@ -69,6 +78,12 @@ class EvidenceArtifactResponse(BaseModel):
     record_count: int = 0
     warning_count: int = 0
     invalid_record_count: int = 0
+
+
+class EvidenceListResponse(BaseModel):
+    case_id: UUID
+    items: list[EvidenceArtifactResponse]
+    total: int
 
 
 class EvidenceRecordResponse(BaseModel):

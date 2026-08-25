@@ -185,3 +185,31 @@ NOT YET IMPLEMENTED
 - Neo4j graph (Phase 4)
 - Advanced temporal: DTW, continuous signal drift regression across anchors
 - Ingestion retry for failed artifacts / needs_review workflow UI
+
+
+--- Iteration 4 | 2026-08-26 | MVP UI: Dashboard + Case Ingestion ---
+
+FRONTEND (frontend/src/)
+- React + TypeScript + Vite + react-router-dom
+- Sticky TRACE navbar, left sidebar listing full MVP nav (future items marked Soon)
+- Dashboard: highlights live research features (temporal reconstruction, conflicts, anomalies, custody)
+- Case Ingestion page: investigator identity (localStorage), case create/edit, evidence upload
+- Uploaded data panel: filename, uploader, timestamp, SHA-256, custody chain, processing status
+- Add-more via upload form; remove gated to non-uploader investigators (UI + API)
+
+BACKEND API ADDITIONS (chain-of-custody support for UI)
+- GET /cases/{id}/evidence — list artifacts with record counts
+- PATCH /cases/{id} — update case metadata
+- POST /cases/{id}/evidence — actor form field (investigator name → custody + audit)
+- CaseCreate.created_by stored in metadata; CaseResponse.created_by exposed
+- DELETE /evidence/{id}?actor= — forbidden if actor is original uploader; audit-logged
+- CORS for localhost:5173; Vite dev proxy for /cases, /evidence
+
+TESTS: +3 custody API tests (list, self-delete forbidden, other-investigator delete)
+
+NEXT WORK
+- Evidence Explorer UI (search/filter records, provenance drill-down)
+- Timeline visualization page (Plotly React, source lanes)
+- Anomalies & Conflicts workspace screens wired to GET endpoints
+- Case list / workspace navigation from sidebar
+- Phase 3: investigation engine + findings UI
