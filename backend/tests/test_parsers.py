@@ -6,7 +6,6 @@ from pypdf import PdfWriter
 from app.core.parsers.registry import ParserRegistry
 from app.core.parsers.base import UnsupportedFormatError
 
-
 @pytest.fixture()
 def registry() -> ParserRegistry:
     return ParserRegistry()

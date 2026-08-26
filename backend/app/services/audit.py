@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from app.models import AuditEvent
 from app.services.storage.repositories.audit_repo import AuditRepository
 
-
 class AuditService:
     def __init__(self, db: Session) -> None:
         self.repo = AuditRepository(db)

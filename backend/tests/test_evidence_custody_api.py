@@ -1,7 +1,5 @@
 """Tests for evidence list and delete chain-of-custody rules."""
-
 from pathlib import Path
-
 
 def test_list_case_evidence(client, test_data_dir: Path):
     create_resp = client.post(

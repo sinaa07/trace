@@ -8,7 +8,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base, TimestampMixin, utcnow
 from app.models.enums import CaseStatus
 
-
 class Case(Base, TimestampMixin):
     __tablename__ = "cases"
 
