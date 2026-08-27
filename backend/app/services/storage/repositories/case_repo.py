@@ -18,6 +18,18 @@ class CaseRepository:
     def get(self, case_id: uuid.UUID) -> Case | None:
         return self.db.get(Case, case_id)
 
+    def list_cases(self, *, limit: int = 100, offset: int = 0) -> list[Case]:
+        stmt = (
+            select(Case)
+            .order_by(Case.created_at.desc())
+            .offset(max(offset, 0))
+            .limit(max(1, min(limit, 500)))
+        )
+        return list(self.db.scalars(stmt).all())
+
+    def count_cases(self) -> int:
+        return self.db.scalar(select(func.count()).select_from(Case)) or 0
+
     def update_status(self, case: Case, status: CaseStatus) -> Case:
         case.status = status
         self.db.flush()

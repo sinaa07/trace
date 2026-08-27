@@ -2,19 +2,22 @@ import json
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.enums import SourceType
 from app.schemas import (
     CaseCreate,
+    CaseListResponse,
     CaseResponse,
     CaseUpdate,
     EvidenceArtifactResponse,
     EvidenceListResponse,
+    EvidenceRecordsListResponse,
 )
 from app.services.case_service import CaseService
+from app.services.evidence_service import EvidenceService
 from app.services.ingestion import DuplicateEvidenceError, IngestionOrchestrator
 
 router = APIRouter(prefix="/cases", tags=["cases"])
@@ -26,6 +29,10 @@ def get_case_service(db: Session = Depends(get_db)) -> CaseService:
 
 def get_ingestion_service(db: Session = Depends(get_db)) -> IngestionOrchestrator:
     return IngestionOrchestrator(db)
+
+
+def get_evidence_service(db: Session = Depends(get_db)) -> EvidenceService:
+    return EvidenceService(db)
 
 
 def _case_response(case, evidence_count: int = 0) -> CaseResponse:
@@ -43,6 +50,32 @@ def create_case(
 ) -> CaseResponse:
     case = service.create_case(payload)
     return _case_response(case)
+
+
+@router.get("", response_model=CaseListResponse)
+def list_cases(
+    service: Annotated[CaseService, Depends(get_case_service)],
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> CaseListResponse:
+    try:
+        items, total = service.list_cases(limit=limit, offset=offset)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "error": {
+                    "code": "CASE_LIST_FAILED",
+                    "message": f"Failed to list cases: {exc}",
+                }
+            },
+        ) from exc
+    return CaseListResponse(
+        items=[_case_response(case, count) for case, count in items],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get("/{case_id}", response_model=CaseResponse)
@@ -99,6 +132,63 @@ def list_case_evidence(
         items.append(response)
 
     return EvidenceListResponse(case_id=case_id, items=items, total=len(items))
+
+
+@router.get("/{case_id}/records", response_model=EvidenceRecordsListResponse)
+def list_case_records(
+    case_id: uuid.UUID,
+    case_service: Annotated[CaseService, Depends(get_case_service)],
+    evidence_service: Annotated[EvidenceService, Depends(get_evidence_service)],
+    evidence_id: Annotated[uuid.UUID | None, Query()] = None,
+    source_type: Annotated[SourceType | None, Query()] = None,
+    is_valid: Annotated[bool | None, Query()] = None,
+    has_warnings: Annotated[bool | None, Query()] = None,
+    q: Annotated[str | None, Query(max_length=256)] = None,
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> EvidenceRecordsListResponse:
+    case, _ = case_service.get_case_with_count(case_id)
+    if not case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "NOT_FOUND", "message": "Case not found"}},
+        )
+    try:
+        items, total = evidence_service.search_case_records(
+            case_id,
+            evidence_id=evidence_id,
+            source_type=source_type,
+            is_valid=is_valid,
+            has_warnings=has_warnings,
+            q=q,
+            limit=limit,
+            offset=offset,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "error": {
+                    "code": "RECORD_SEARCH_FAILED",
+                    "message": f"Failed to search evidence records: {exc}",
+                }
+            },
+        ) from exc
+
+    return EvidenceRecordsListResponse(
+        case_id=case_id,
+        items=items,
+        total=total,
+        limit=limit,
+        offset=offset,
+        filters={
+            "evidence_id": str(evidence_id) if evidence_id else None,
+            "source_type": source_type.value if source_type else None,
+            "is_valid": is_valid,
+            "has_warnings": has_warnings,
+            "q": q,
+        },
+    )
 
 
 @router.post(

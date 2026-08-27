@@ -1,0 +1,44 @@
+PRELIMINARY ACCIDENT REPORT
+Reference: BPL/COL/2024/1103
+Date of report: 04-Nov-2024 02:15 hrs
+Reporting officer: SI Meena Devi, RPF Bhopal
+
+INCIDENT SUMMARY
+At approximately 21:15 hrs on 03-Nov-2024, passenger train 12139 (Bhopal-Nagpur Express)
+collided with stationary goods train 53201 in Bhopal Yard at km 4.2 near signal BPL-YD-12.
+
+ON-GROUND SCENARIO
+- Type: Rear-end collision (passenger into stationary freight)
+- Stationary train: Goods 53201 (empty BOXN rake), stabled on Yard Loop 2 for brake testing since 19:45 hrs
+- Impact speed estimated 60-65 km/h based on damage and telemetry
+- Passenger rake: 18 coaches + WAP-7 loco; leading coach (S1) crushed, 3 coaches derailed
+- Freight rake: 2 wagons damaged at rear, loco undamaged
+
+CASUALTIES
+- Passengers: 2 confirmed dead (bodies at Hamidia Hospital), 12 injured (8 admitted, 4 treated OPD)
+- Railway staff on 12139: Assistant Driver injured (fractured ribs); Guard injured (head trauma)
+- Driver of 12139: NOT PRESENT at scene when rescue arrived at 21:25 hrs
+- Driver located at 23:40 hrs at crew rest room, BPL; appeared disoriented, medical exam ordered
+- Staff on 53201: Guard present, uninjured; no loco crew (train was stabled)
+
+DRIVER STATUS
+- Driver Sh. Rajesh Yadav - ABSENT from cab at time of first responder arrival
+- Found later; claims "does not remember applying brakes"
+- Breathalyser: Pending (sample collected 00:10 hrs on 04-Nov)
+- Driver's emergency brake handle found in applied position in cab
+
+PRELIMINARY OBSERVATIONS
+- CTC export shows signal BPL-YD-12 GREEN at 21:14:22 for train 12139
+- Separate interlocking panel log obtained from yard cabin shows BPL-YD-12 RED at 21:14:22
+- DISCREPANCY between CTC log and interlocking log for same timestamp - under investigation
+- No TPWS/ATP intervention recorded
+- Stationary train 53201 had handbrake applied; shunting staff confirmed stabling at 19:52 hrs
+
+ACTIONS TAKEN
+- Rescue and medical evacuation
+- NDRF called off at 01:30 hrs (all passengers accounted)
+- Both signal logs seized; CTC workstation imaged
+- Driver suspended pending inquiry
+- CRS notification sent
+
+Report status: PRELIMINARY - conflicting signal evidence noted

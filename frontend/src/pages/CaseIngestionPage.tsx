@@ -11,6 +11,7 @@ import {
   getInvestigatorName,
   setInvestigatorName,
 } from "../services/investigator";
+import { setActiveCaseId } from "../services/workspace";
 import type {
   Case,
   EvidenceArtifact,
@@ -89,6 +90,7 @@ export function CaseIngestionPage() {
   const loadCase = useCallback(
     async (caseId: string) => {
       const data = await getCase(caseId);
+      setActiveCaseId(caseId);
       setActiveCase(data);
       setCaseForm({
         title: data.title,
@@ -164,6 +166,7 @@ export function CaseIngestionPage() {
         : await createCase(payload);
 
       setActiveCase(created);
+      setActiveCaseId(created.case_id);
       setEditMode(false);
       setSuccess(
         editMode

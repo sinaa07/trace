@@ -4,6 +4,7 @@ from app.models.case import Case
 from app.models.enums import CaseStatus, ProcessingStatus, SourceType
 from app.models.event import Event
 from app.models.evidence import EvidenceArtifact, EvidenceRecord
+from app.models.finding import HypothesisFinding
 from app.models.quality import Anomaly, AnomalySeverity, ConflictSeverity, EvidenceConflict
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
     "EvidenceArtifact",
     "EvidenceConflict",
     "EvidenceRecord",
+    "HypothesisFinding",
     "ProcessingStatus",
     "SourceType",
 ]

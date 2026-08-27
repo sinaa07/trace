@@ -74,3 +74,11 @@ class CaseService:
         if not case:
             return None, 0
         return case, self.repo.evidence_count(case_id)
+
+    def list_cases(
+        self, *, limit: int = 100, offset: int = 0
+    ) -> tuple[list[tuple[Case, int]], int]:
+        cases = self.repo.list_cases(limit=limit, offset=offset)
+        total = self.repo.count_cases()
+        items = [(case, self.repo.evidence_count(case.case_id)) for case in cases]
+        return items, total

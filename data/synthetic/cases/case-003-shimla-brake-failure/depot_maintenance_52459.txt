@@ -1,0 +1,5 @@
+2024-06-20 14:00:00 [INFO] Scheduled brake inspection equipment_id=52459-BC status=overdue
+2024-06-21 09:30:00 [WARN] Brake cylinder pressure test deferred equipment_id=52459-BC status=deferred
+2024-06-21 16:45:00 [INFO] Visual brake block check equipment_id=52459-BLK status=attention
+2024-06-22 08:00:00 [INFO] Pre-departure brake test equipment_id=52459-BC status=passed
+2024-06-22 08:15:00 [WARN] Minor brake lag noted on coach BC-3 equipment_id=52459-C3 status=attention

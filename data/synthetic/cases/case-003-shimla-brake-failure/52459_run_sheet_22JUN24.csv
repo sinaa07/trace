@@ -1,0 +1,10 @@
+seq,station_code,station_name,junction_id,planned_arrival,planned_departure,km_marker,track,eta_next_stop
+1,KLK,Kalka,KLK-J01,10:30:00,10:35:00,0.0,NG-UP,10:52:00
+2,SWO,Sonwara,SWO-J02,10:52:00,10:53:00,6.2,NG-UP,11:08:00
+3,DHR,Dharmpur,DHR-J03,11:08:00,11:09:00,12.4,NG-UP,11:24:00
+4,KTZ,Kumarhatti,KTZ-J04,11:24:00,11:25:00,19.8,NG-UP,11:38:00
+5,BLPL,Barog,BLPL-J05,11:38:00,11:42:00,33.2,NG-UP,11:58:00
+6,SLF,Solan,SLF-J06,11:58:00,12:00:00,46.1,NG-UP,12:18:00
+7,CHLS,Chail,CHLS-J07,12:18:00,12:19:00,58.7,NG-UP,12:35:00
+8,STBR,Taradevi,STBR-J08,12:35:00,12:36:00,68.4,NG-UP,12:52:00
+9,SML,Shimla,SML-J09,12:52:00,12:52:00,96.0,NG-UP,

@@ -1,0 +1,8 @@
+seq,station_code,station_name,junction_id,planned_arrival,planned_departure,km_marker,track,eta_next_stop
+1,BPL,Bhopal Junction,BPL-J01,20:15:00,20:22:00,0.0,DN-MAIN,20:38:00
+2,BPL-YD,Bhopal Yard,BPL-YD-J02,20:38:00,20:40:00,4.2,YD-LOOP,20:55:00
+3,BNCE,Bairagarh,BPL-J03,20:55:00,20:57:00,12.8,DN-MAIN,21:18:00
+4,MDP,Misrod,BPL-J04,21:18:00,21:20:00,28.4,DN-MAIN,21:42:00
+5,ODG,Obedullaganj,BPL-J05,21:42:00,21:44:00,51.6,DN-MAIN,22:05:00
+6,HBJ,Habibganj,HBJ-J06,22:05:00,22:08:00,68.9,DN-MAIN,22:35:00
+7,NGP,Nagpur Junction,NGP-J07,02:10:00,02:10:00,352.0,DN-MAIN,

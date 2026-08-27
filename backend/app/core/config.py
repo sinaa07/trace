@@ -20,5 +20,12 @@ class Settings(BaseSettings):
     parser_version: str = "1.0.0"
     reject_duplicate_hash: bool = True
 
+    # Pluggable LLM: heuristic (default) | openai_compatible/ollama/vllm | anthropic
+    llm_provider: str = "heuristic"
+    llm_base_url: str = "http://127.0.0.1:11434/v1"
+    llm_model: str = "llama3.2"
+    llm_api_key: str = ""
+    investigation_max_iterations: int = 5
+
 
 settings = Settings()

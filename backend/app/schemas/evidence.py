@@ -86,6 +86,13 @@ class EvidenceListResponse(BaseModel):
     total: int
 
 
+class CaseListResponse(BaseModel):
+    items: list[CaseResponse]
+    total: int
+    limit: int
+    offset: int
+
+
 class EvidenceRecordResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -99,6 +106,18 @@ class EvidenceRecordResponse(BaseModel):
     parse_warnings: list[str] | None
     is_valid: bool
     created_at: datetime
+    filename: str | None = None
+    source_type: SourceType | None = None
+    sha256: str | None = None
+
+
+class EvidenceRecordsListResponse(BaseModel):
+    case_id: UUID
+    items: list[EvidenceRecordResponse]
+    total: int
+    limit: int
+    offset: int
+    filters: dict[str, Any] = Field(default_factory=dict)
 
 
 class ErrorDetail(BaseModel):

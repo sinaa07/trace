@@ -47,3 +47,6 @@ class Case(Base, TimestampMixin):
     conflicts = relationship(
         "EvidenceConflict", back_populates="case", cascade="all, delete-orphan"
     )
+    findings = relationship(
+        "HypothesisFinding", back_populates="case", cascade="all, delete-orphan"
+    )

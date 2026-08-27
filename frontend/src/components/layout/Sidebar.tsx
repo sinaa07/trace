@@ -53,16 +53,26 @@ export function Sidebar({ items, sectionLabel = "Investigation Workspace" }: Sid
 export const MVP_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", path: "/" },
   { label: "Case Ingestion", path: "/ingestion" },
-  { label: "Cases", disabled: true, badge: "Soon" },
-  { label: "Case Overview", disabled: true, badge: "Soon" },
-  { label: "Evidence Explorer", disabled: true, badge: "Soon" },
-  { label: "Timeline", disabled: true, badge: "Soon" },
-  { label: "Anomalies", disabled: true, badge: "Soon" },
-  { label: "Conflicts", disabled: true, badge: "Soon" },
-  { label: "Hypotheses", disabled: true, badge: "Soon" },
+  { label: "Cases", path: "/cases" },
+  { label: "Case Overview", path: "/overview" },
+  { label: "Evidence Explorer", path: "/evidence" },
+  { label: "Timeline", path: "/timeline" },
+  { label: "Anomalies", path: "/anomalies" },
+  { label: "Conflicts", path: "/conflicts" },
+  { label: "Findings", path: "/findings" },
+  { label: "Hypotheses", path: "/hypotheses" },
   { label: "Causal Graph", disabled: true, badge: "Soon" },
   { label: "Evidence Gaps", disabled: true, badge: "Soon" },
-  { label: "Findings", disabled: true, badge: "Soon" },
   { label: "Report", disabled: true, badge: "Soon" },
   { label: "Audit Trail", disabled: true, badge: "Soon" },
 ];
+
+export function navItemsForPath(pathname: string): NavItem[] {
+  return MVP_NAV_ITEMS.map((item) => {
+    if (!item.path) return { ...item, active: false };
+    if (item.path === "/") {
+      return { ...item, active: pathname === "/" };
+    }
+    return { ...item, active: pathname === item.path || pathname.startsWith(`${item.path}/`) };
+  });
+}

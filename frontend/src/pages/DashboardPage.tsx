@@ -35,11 +35,25 @@ const RESEARCH_FEATURES = [
       "Versioned domain profiles score incoming files against expected schemas, flagging low-confidence matches for investigator review before event extraction.",
   },
   {
+    title: "Evidence Explorer",
+    tag: "live" as const,
+    highlight: true,
+    description:
+      "Search and filter normalized evidence records with provenance drill-down — raw vs cleaned values, field transforms, and parse warnings.",
+  },
+  {
+    title: "Domain Feature Preprocessors",
+    tag: "live" as const,
+    highlight: true,
+    description:
+      "Deterministic Phase 3 scorers for fatigue alertness, signalling rules, track condition, weather thresholds, and telemetry statistics — feeding agents, not replacing them.",
+  },
+  {
     title: "Evidence-Grounded Investigation",
     tag: "planned" as const,
     highlight: false,
     description:
-      "Multi-agent hypothesis testing with MCP tool access — every finding must cite supporting or contradicting evidence records (Phase 3).",
+      "Multi-agent hypothesis testing with MCP tool access — every finding must cite supporting or contradicting evidence records (Phase 3 agents next).",
   },
   {
     title: "Causal Graph Analysis",

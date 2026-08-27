@@ -1,0 +1,44 @@
+PRELIMINARY ACCIDENT REPORT
+Reference: SML/BRK/2024/0622
+Date of report: 22-Jun-2024 15:45 hrs
+Reporting officer: ASI G.S. Rawat, GRP Kalka
+
+INCIDENT SUMMARY
+At approximately 11:40 hrs on 22-Jun-2024, narrow-gauge passenger train 52459 (Kalka-Shimla)
+experienced uncontrolled acceleration and runaway on the 1:25 gradient section between Barog
+and Solan at km 46.1-47.2. Train stopped after emergency brake application and sand deployment.
+
+ON-GROUND SCENARIO
+- Type: Runaway / brake failure on descending gradient (NOT derailment)
+- All 7 coaches and ZDM-3 loco remained on track
+- Train halted 200m before SLF-GR-02 signal at km 47.2
+- Gradient: 1 in 25 (4%) descending; speed rose from 18 to 58 km/h in ~90 seconds
+- No collision with another train or obstruction
+
+CASUALTIES
+- Passengers: 45 on board; all evacuated safely by 12:30 hrs; 3 treated for anxiety/ minor bruises at Solan Civil Hospital
+- Driver (Sh. Amar Singh): PRESENT but INJURED - trapped in cab for 25 mins, compound fracture left leg, conscious
+- Assistant Driver (Sh. Rakesh Kumar): PRESENT, uninjured, assisted evacuation
+- Guard (Sh. Suresh Chand): PRESENT, uninjured
+
+DRIVER STATUS
+- Driver PRESENT at scene throughout. Rescued from cab by fire brigade at 12:05 hrs.
+- Driver statement: "Applied brakes at Barog departure, felt normal initially. After crossing
+  km 46.5 brakes felt spongy. Applied emergency brake and sand - train slowed but took long distance"
+- Driver fit for duty certificate expired 15-Jun-2024 (renewal pending)
+
+PRELIMINARY OBSERVATIONS
+- Telemetry shows brake_status=RELEASED continuously during acceleration phase (11:38:02 - 11:39:28)
+- Emergency brake applied at 11:39:40; speed dropped from 58 to 0 km/h over ~28 seconds
+- Depot maintenance records show brake inspection OVERDUE since 20-Jun; pre-departure test marked PASSED same morning
+- Signal SLF-GR-01 was GREEN; no signal violation
+- Track and rolling stock brake blocks to be examined at workshop
+
+ACTIONS TAKEN
+- Driver extricated and hospitalised
+- Passengers bussed to Shimla
+- Train secured at site; traffic suspended Kalka-Solan until 18:00 hrs
+- Mechanical branch directed to inspect entire rake brake rigging
+- Commissioner of Railway Safety (Safety) notified
+
+Report status: PRELIMINARY - maintenance records requested from Kalka depot

@@ -10,6 +10,9 @@ class EventRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
+    def get(self, event_id: uuid.UUID) -> Event | None:
+        return self.db.get(Event, event_id)
+
     def bulk_create(self, events: list[Event]) -> None:
         self.db.add_all(events)
         self.db.flush()

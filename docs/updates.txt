@@ -213,3 +213,96 @@ NEXT WORK
 - Anomalies & Conflicts workspace screens wired to GET endpoints
 - Case list / workspace navigation from sidebar
 - Phase 3: investigation engine + findings UI
+
+
+--- Iteration 5 | 2026-08-27 | Investigation Workspace UI + Phase 3 Scorers ---
+
+BACKEND APIs
+- GET /cases — paginated case list
+- GET /cases/{id}/records — search/filter evidence records (q, source_type, evidence_id, is_valid, has_warnings)
+- GET /evidence/{id}/records — artifact record listing
+- GET /evidence/records/{record_id} — single record detail with provenance
+- GET /cases/{id}/domain-features — Phase 3 deterministic domain scorers
+
+DOMAIN SCORERS (backend/app/core/scorers/) — per Model Architecture Review
+- AlertnessScorer: degraded Three-Process (circadian + duty always; S/W only when sleep inputs exist)
+- BehavioralTelemetryScorer: speed variance / brake / throttle features (no fatigue verdict)
+- WeatherRiskScorer: threshold composite (visibility/wind/rail temp/rainfall)
+- TrackConditionScorer: QI exponential fit when possible; else overdue-maintenance flags
+- SignalRuleScorer: summarizes existing invalid_signal_transition anomalies
+- Evidence-weighted ranking helper (not Bayesian; agent confidence ≠ probability)
+- HypothesisFinding Pydantic contracts in schemas/investigation.py
+
+FRONTEND WORKSPACE
+- Cases list + active-case localStorage workspace
+- Case Overview with evidence/timeline/anomaly/conflict stats
+- Evidence Explorer: filters + record list + raw/normalized/provenance drill-down
+- Timeline: source-lane markers from corrected timestamps + rebuild action
+- Anomalies + Conflicts pages wired to live quality APIs
+- Sidebar navigation enabled for workspace routes
+
+TESTS
+- test_evidence_explorer_api.py
+- test_domain_scorers.py
+- test_domain_features_api.py
+
+NOT YET IMPLEMENTED
+- Neo4j causal graph (Phase 4)
+- Advanced: DTW, BN, Dempster-Shafer, scenario counterfactuals
+- Paid/remote LLM eval harness; formal MCP SDK server process (in-process adapter ships)
+
+
+NEXT WORK
+- Phase 4: Neo4j evidence-linked causal templates (edges only when findings cite evidence)
+- Optional Ollama/vLLM smoke path for generative agent findings
+- Evidence Gaps / Audit Trail / Report UI
+- Advanced modules after E2E synthetic gate (BN, DS, scenario CF)
+
+
+--- Iteration 6 | 2026-08-27 | Phase 3 Agents + Findings Persistence ---
+
+ARCHITECTURE (per Model Architecture Review)
+- Preprocessors (Iteration 5) → MCP read tools → four domain agents + meta ranking
+- Default LLM_PROVIDER=heuristic (no paid API); openai_compatible/ollama/anthropic optional
+- Evidence-weighted ranking in code (not BN/DS); agent confidence ≠ probability
+- Bounded tool loops (max 5) — LangGraph-shaped Python orchestrator
+
+MCP EVIDENCE TOOLS (backend/app/core/mcp/)
+- In-process read adapter: query_evidence, get_event, get_events, get_timeline,
+  get_source_metadata, get_evidence_provenance, get_evidence_gaps,
+  get_domain_features, get_anomalies, get_conflicts
+
+AGENTS (backend/app/core/agents/)
+- train_driver, signalling, track, environment (+ optional meta LLM narrative)
+- Heuristic synthesizer builds HypothesisFinding from features + tool results
+- Pluggable LLM layer for structured JSON when configured
+
+PERSISTENCE
+- HypothesisFinding model + Alembic 005_hypothesis_findings
+- rank_score + rank_dimensions stored; replace-on-rerun investigation
+
+API
+- POST /cases/{id}/investigate
+- GET /cases/{id}/findings
+- GET /cases/{id}/hypotheses (ranked)
+- Audit action: investigation.completed; case status → investigating
+
+FRONTEND
+- Findings page: run investigation + finding cards
+- Hypotheses page: dimension breakdown + weighted scores
+- Sidebar routes enabled
+
+CONFIG
+- LLM_PROVIDER, LLM_BASE_URL, LLM_MODEL, LLM_API_KEY, INVESTIGATION_MAX_ITERATIONS
+
+TESTS: 57 passing (+4 investigation agent/API tests)
+
+NOT YET IMPLEMENTED
+- Neo4j causal graph (Phase 4)
+- Standalone MCP server process / LangGraph package dependency
+- Advanced: DTW, BN, Dempster-Shafer, scenario counterfactuals
+
+NEXT WORK
+- Phase 4: Neo4j evidence-linked causal templates
+- Optional local LLM smoke eval
+- Evidence Gaps / Audit Trail / Report UI
