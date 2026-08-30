@@ -13,6 +13,14 @@ import {
 import { getInvestigatorName } from "../services/investigator";
 import type { Case, HypothesisFinding } from "../types/case";
 
+function sortFindingsByRank(findings: HypothesisFinding[]): HypothesisFinding[] {
+  return [...findings].sort((a, b) => {
+    const aScore = a.rank_score ?? Number.NEGATIVE_INFINITY;
+    const bScore = b.rank_score ?? Number.NEGATIVE_INFINITY;
+    return bScore - aScore;
+  });
+}
+
 export function FindingsPage() {
   const [params] = useSearchParams();
   const caseId = params.get("case") || getActiveCaseId();
@@ -34,7 +42,7 @@ export function FindingsPage() {
         listCaseFindings(id),
       ]);
       setCaseData(caseResp);
-      setFindings(data.findings);
+      setFindings(sortFindingsByRank(data.findings));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load findings");
       setFindings([]);
@@ -56,7 +64,11 @@ export function FindingsPage() {
         caseId,
         getInvestigatorName() || "investigator",
       );
-      setFindings(result.findings);
+      const sortedFindings =
+        result.ranked.length > 0
+          ? result.ranked.map((item) => item.finding)
+          : sortFindingsByRank(result.findings);
+      setFindings(sortedFindings);
       setMetaSummary(result.meta_summary);
       setProvider(result.provider);
       const refreshed = await getCase(caseId);
@@ -113,14 +125,16 @@ export function FindingsPage() {
           </div>
         ) : (
           <div className="finding-list">
-            {findings.map((item) => (
+            {findings.map((item, index) => (
               <article key={item.finding_id} className="finding-card">
                 <div className="finding-card-header">
-                  <h3>{item.hypothesis}</h3>
+                  <h3>
+                    #{index + 1} · {item.hypothesis}
+                  </h3>
                   <span className="severity-pill medium">
                     {item.domain}
                     {item.rank_score != null
-                      ? ` · ${item.rank_score.toFixed(3)}`
+                      ? ` · score ${item.rank_score.toFixed(3)}`
                       : ""}
                   </span>
                 </div>
