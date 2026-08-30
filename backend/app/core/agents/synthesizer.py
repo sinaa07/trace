@@ -62,6 +62,7 @@ AGENT_SPECS: dict[str, dict[str, Any]] = {
         "source_types": ("weather",),
         "tool_plan": (
             ("get_domain_features", {}),
+            ("fetch_weather_at_location", {}),
             ("query_evidence", {"source_type": "weather", "limit": 20}),
             ("get_evidence_gaps", {}),
         ),
@@ -96,6 +97,7 @@ def synthesize_finding(
     anomalies = (tool_results.get("get_anomalies") or {}).get("items") or []
     conflicts = (tool_results.get("get_conflicts") or {}).get("items") or []
     gaps = tool_results.get("get_evidence_gaps") or {}
+    weather_fetch = tool_results.get("fetch_weather_at_location") or {}
 
     supporting: list[str] = []
     contradicting: list[str] = []
@@ -109,6 +111,18 @@ def synthesize_finding(
             and prefix in {"fatigue", "behavioral_telemetry"}
         ):
             missing.append(str(item))
+
+    external_weather_summary: str | None = None
+    external_weather_score = 0.0
+    if agent_id == "environment":
+        (
+            relevant_features,
+            missing,
+            external_weather_score,
+            external_weather_summary,
+        ) = _apply_external_weather_context(
+            relevant_features, weather_fetch, missing
+        )
 
     for feat in relevant_features.values():
         for mid in feat.get("missing_inputs") or []:
@@ -126,6 +140,21 @@ def synthesize_finding(
         rid = rec.get("record_id")
         if rid:
             supporting.append(f"evidence_record:{rid}")
+
+    if agent_id == "environment" and weather_fetch.get("observation"):
+        obs = weather_fetch["observation"]
+        provider = obs.get("provider") or "weather_provider"
+        supporting.append(
+            f"external_weather:{provider}:{obs.get('observed_at')}"
+        )
+        risk = weather_fetch.get("risk_assessment") or {}
+        if risk.get("score") is not None and float(risk["score"]) >= 0.3:
+            supporting.append(f"external_weather_risk:{risk.get('summary')}")
+        coords = weather_fetch.get("coordinates") or {}
+        if coords.get("source"):
+            supporting.append(f"coordinates:{coords.get('source')}")
+    elif agent_id == "environment" and weather_fetch.get("error"):
+        missing.append(f"external_weather:{weather_fetch['error']}")
 
     # Domain-specific anomaly / conflict attachment
     if agent_id == "signalling":
@@ -183,20 +212,40 @@ def synthesize_finding(
     relevant_event_ids = _unique(relevant_event_ids)
     missing = _unique(missing)
 
-    max_score = 0.0
+    max_score = external_weather_score
     summaries: list[str] = []
     for feat in relevant_features.values():
-        summaries.append(str(feat.get("summary") or ""))
+        summary = str(feat.get("summary") or "")
+        if (
+            agent_id == "environment"
+            and external_weather_summary
+            and "No weather measurements available" in summary
+        ):
+            continue
+        if summary:
+            summaries.append(summary)
         if feat.get("score") is not None:
             max_score = max(max_score, float(feat["score"]))
+    if agent_id == "environment" and external_weather_summary:
+        summaries.append(external_weather_summary)
 
-    hypothesis = _hypothesis_text(agent_id, max_score, relevant_features, evidence_items)
+    hypothesis = _hypothesis_text(
+        agent_id, max_score, relevant_features, evidence_items, weather_fetch
+    )
     reasoning_parts = [
         f"Agent focus: {spec['questions'][0]}.",
         *summaries,
         f"Retrieved {len(evidence_items)} evidence record(s), "
         f"{len(events)} event(s), {len(anomalies)} anomaly(ies).",
     ]
+    if agent_id == "environment" and weather_fetch.get("observation"):
+        obs = (weather_fetch.get("observation") or {})
+        coords = weather_fetch.get("coordinates") or {}
+        reasoning_parts.append(
+            "External weather fetched via MCP at "
+            f"({coords.get('latitude')}, {coords.get('longitude')}) "
+            f"for {obs.get('observed_at')}."
+        )
     if contradicting:
         reasoning_parts.append(
             f"Noted {len(contradicting)} contradicting observation(s)."
@@ -207,7 +256,8 @@ def synthesize_finding(
         0.15
         + 0.25 * min(len(supporting) / 3.0, 1.0)
         + 0.35 * max_score
-        + (0.1 if evidence_items else 0.0),
+        + (0.1 if evidence_items else 0.0)
+        + (0.12 if agent_id == "environment" and weather_fetch.get("observation") else 0.0),
         0.95,
     )
     if not evidence_items and max_score == 0.0:
@@ -217,7 +267,12 @@ def synthesize_finding(
         "Domain preprocessor scores are features, not causal proof.",
         "Agent confidence is not a Bayesian probability.",
     ]
-    if not evidence_items:
+    if not evidence_items and agent_id == "environment" and weather_fetch.get("observation"):
+        assumptions.append(
+            "Weather assessment uses external Open-Meteo MCP fetch; "
+            "uploaded weather evidence was not available."
+        )
+    elif not evidence_items:
         assumptions.append("Limited direct evidence for this domain; hypothesis is provisional.")
 
     uncertainty = None
@@ -275,6 +330,7 @@ def _hypothesis_text(
     max_score: float,
     features: dict[str, Any],
     evidence_items: list[dict[str, Any]],
+    weather_fetch: dict[str, Any] | None = None,
 ) -> str:
     if agent_id == "train_driver":
         fatigue = features.get("fatigue") or {}
@@ -326,6 +382,14 @@ def _hypothesis_text(
         return "Insufficient track/maintenance evidence for a strong infrastructure hypothesis."
     if agent_id == "environment":
         weather = features.get("weather") or {}
+        external = weather_fetch or {}
+        external_risk = external.get("risk_assessment") or {}
+        external_score = external_risk.get("score")
+        if external_score is not None and float(external_score) >= 0.3:
+            return (
+                "External weather service reports adverse conditions at the "
+                "accident coordinates (visibility/wind/rain/temperature thresholds)."
+            )
         if weather.get("score") is not None and float(weather["score"]) >= 0.3:
             return (
                 "Adverse weather thresholds (visibility/wind/rain/rail temp) "
@@ -340,6 +404,87 @@ def _hypothesis_text(
     if max_score >= 0.4:
         return f"Elevated {agent_id} risk indicators suggest possible contribution."
     return f"No strong {agent_id} contribution indicated by available evidence."
+
+
+def _apply_external_weather_context(
+    relevant_features: dict[str, Any],
+    weather_fetch: dict[str, Any],
+    missing: list[str],
+) -> tuple[dict[str, Any], list[str], float, str | None]:
+    """Fold Open-Meteo MCP results into environment agent weather context."""
+    if not weather_fetch.get("observation"):
+        return relevant_features, missing, 0.0, None
+
+    risk = weather_fetch.get("risk_assessment") or {}
+    obs = weather_fetch["observation"]
+    provenance = weather_fetch.get("provenance") or {}
+    coords = weather_fetch.get("coordinates") or {}
+    domain_weather = relevant_features.get("weather") or {}
+
+    external_weather = {
+        "domain": "weather",
+        "score": risk.get("score"),
+        "summary": risk.get("summary") or "External weather observations retrieved.",
+        "features": {
+            **(risk.get("features") or {}),
+            "ambient_temp_c": obs.get("ambient_temp_c"),
+            "rainfall_mm_hour": obs.get("rainfall_mm_hour"),
+            "wind_speed_kmh": obs.get("wind_speed_kmh"),
+            "visibility_m": obs.get("visibility_m"),
+            "source": provenance.get("provider") or "open-meteo",
+            "observed_at": obs.get("observed_at"),
+            "latitude": coords.get("latitude"),
+            "longitude": coords.get("longitude"),
+            "coordinate_source": coords.get("source"),
+        },
+        "inputs_used": risk.get("inputs_used") or [],
+        "missing_inputs": risk.get("missing_inputs") or [],
+        "warnings": [
+            *(domain_weather.get("warnings") or []),
+            "External weather via MCP fetch_weather_at_location (not uploaded evidence).",
+        ],
+    }
+
+    domain_summary = str(domain_weather.get("summary") or "")
+    domain_has_measurements = domain_weather.get("score") is not None and (
+        "No weather measurements available" not in domain_summary
+    )
+    if domain_has_measurements:
+        merged = {**domain_weather, "features": {
+            **(domain_weather.get("features") or {}),
+            **(external_weather.get("features") or {}),
+        }}
+        if external_weather.get("score") is not None and (
+            domain_weather.get("score") is None
+            or float(external_weather["score"]) > float(domain_weather["score"])
+        ):
+            merged["score"] = external_weather["score"]
+            merged["summary"] = (
+                f"{domain_summary} External check: {external_weather['summary']}"
+            )
+        relevant_features = {**relevant_features, "weather": merged}
+    else:
+        relevant_features = {**relevant_features, "weather": external_weather}
+
+    external_score = (
+        float(risk["score"]) if risk.get("score") is not None else 0.0
+    )
+    inputs_used = set(risk.get("inputs_used") or [])
+    filtered_missing: list[str] = []
+    for item in missing:
+        if item == "weather":
+            continue
+        if item.startswith("weather:"):
+            field_name = item.split(":", 1)[1]
+            if field_name in inputs_used:
+                continue
+        filtered_missing.append(item)
+
+    summary_line = (
+        f"Open-Meteo at ({coords.get('latitude')}, {coords.get('longitude')}): "
+        f"{risk.get('summary') or 'observations retrieved'}."
+    )
+    return relevant_features, filtered_missing, external_score, summary_line
 
 
 def _unique(values: list[str]) -> list[str]:

@@ -92,6 +92,77 @@ def test_heuristic_synthesizer_produces_finding():
     assert any("anomaly:" in s for s in finding.supporting_evidence)
 
 
+def test_environment_synthesizer_merges_external_weather():
+    finding = synthesize_finding(
+        agent_id="environment",
+        tool_results={
+            "get_domain_features": {
+                "domains": [
+                    {
+                        "domain": "weather",
+                        "score": None,
+                        "summary": "No weather measurements available for threshold scoring.",
+                        "missing_inputs": [
+                            "visibility_m",
+                            "wind_speed_kmh",
+                            "rainfall_mm_hour",
+                            "rail_temp_c",
+                            "ambient_temp_c",
+                        ],
+                        "features": {},
+                    }
+                ]
+            },
+            "fetch_weather_at_location": {
+                "coordinates": {
+                    "latitude": 26.5655,
+                    "longitude": 80.515,
+                    "source": "case.location",
+                },
+                "observation": {
+                    "provider": "open-meteo",
+                    "observed_at": "2024-08-14T05:00",
+                    "ambient_temp_c": 27.8,
+                    "rainfall_mm_hour": 2.4,
+                    "wind_speed_kmh": 18.0,
+                    "visibility_m": 1500.0,
+                },
+                "risk_assessment": {
+                    "domain": "weather",
+                    "score": 0.33,
+                    "summary": "Weather risk 0.33; exceedances: visibility_m.",
+                    "features": {"visibility_m_exceeded": True},
+                    "inputs_used": [
+                        "ambient_temp_c",
+                        "rainfall_mm_hour",
+                        "visibility_m",
+                        "wind_speed_kmh",
+                    ],
+                    "missing_inputs": [],
+                },
+            },
+            "query_evidence": {"items": []},
+            "get_evidence_gaps": {
+                "missing_source_types": ["weather", "maintenance", "witness"],
+                "missing_domain_inputs": [
+                    "weather:visibility_m",
+                    "weather:wind_speed_kmh",
+                ],
+            },
+        },
+    )
+
+    assert "External weather service reports adverse conditions" in finding.hypothesis
+    assert "No weather measurements available" not in finding.reasoning
+    assert "Open-Meteo" in finding.reasoning
+    assert finding.confidence > 0.25
+    assert "weather" not in finding.missing_evidence
+    assert not any(m.startswith("weather:visibility_m") for m in finding.missing_evidence)
+    assert finding.domain_features is not None
+    assert finding.domain_features["weather"]["score"] == 0.33
+    assert any("external_weather_risk:" in s for s in finding.supporting_evidence)
+
+
 def test_investigate_api_persists_ranked_findings(client, test_data_dir: Path):
     case_id = _create_case_with_signal(client, test_data_dir)
 

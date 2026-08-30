@@ -27,5 +27,11 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     investigation_max_iterations: int = 5
 
+    # External weather (Open-Meteo — free, no API key)
+    weather_enabled: bool = True
+    weather_archive_url: str = "https://archive-api.open-meteo.com/v1/archive"
+    weather_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
+    weather_timeout_seconds: float = 20.0
+
 
 settings = Settings()

@@ -107,6 +107,7 @@ class InvestigationService:
         self.db.commit()
 
         ranked.sort(key=lambda r: r.weighted_score, reverse=True)
+        persisted.sort(key=lambda f: f.rank_score or 0.0, reverse=True)
         return InvestigationRunResponse(
             case_id=case_id,
             run_id=state.run_id,

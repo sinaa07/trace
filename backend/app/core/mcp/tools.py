@@ -12,6 +12,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from app.core.mcp.weather_tools import fetch_weather_at_location
 from app.models.enums import SourceType
 from app.services.event_service import EventService
 from app.services.quality_service import QualityAnalysisService
@@ -31,6 +32,7 @@ TOOL_NAMES = (
     "get_domain_features",
     "get_anomalies",
     "get_conflicts",
+    "fetch_weather_at_location",
 )
 
 
@@ -66,6 +68,10 @@ class EvidenceTools:
             {"name": "get_domain_features", "purpose": "Domain preprocessor scores"},
             {"name": "get_anomalies", "purpose": "Rule-based anomalies for case"},
             {"name": "get_conflicts", "purpose": "Cross-source conflicts for case"},
+            {
+                "name": "fetch_weather_at_location",
+                "purpose": "Fetch weather at accident coordinates (lat/lon)",
+            },
         ]
 
     def call(self, name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -81,6 +87,7 @@ class EvidenceTools:
             "get_domain_features": self.get_domain_features,
             "get_anomalies": self.get_anomalies,
             "get_conflicts": self.get_conflicts,
+            "fetch_weather_at_location": self.fetch_weather_at_location,
         }
         if name not in handlers:
             return {"error": f"Unknown tool: {name}", "available": list(TOOL_NAMES)}
@@ -303,6 +310,22 @@ class EvidenceTools:
                 for a in anomalies
             ],
         }
+
+    def fetch_weather_at_location(
+        self,
+        *,
+        latitude: float | None = None,
+        longitude: float | None = None,
+        at_time: str | None = None,
+    ) -> dict[str, Any]:
+        """Retrieve weather observations for accident-site coordinates."""
+        return fetch_weather_at_location(
+            self.db,
+            case_id=self.case_id,
+            latitude=latitude,
+            longitude=longitude,
+            at_time=at_time,
+        )
 
     def get_conflicts(self) -> dict[str, Any]:
         conflicts = self.quality.get_conflicts(self.case_id)
