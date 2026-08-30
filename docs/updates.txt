@@ -299,7 +299,33 @@ TESTS: 57 passing (+4 investigation agent/API tests)
 
 NOT YET IMPLEMENTED
 - Neo4j causal graph (Phase 4)
-- Standalone MCP server process / LangGraph package dependency
+- Advanced: DTW, BN, Dempster-Shafer, scenario counterfactuals
+
+
+--- Iteration 7 | 2026-08-31 | MCP Weather Agent + Open-Meteo ---
+
+MCP WEATHER TOOL (backend/app/core/mcp/)
+- fetch_weather_at_location: lat/lon (+ optional at_time) → Open-Meteo observations
+- Coordinate resolver: case.location, metadata, or GPS evidence near incident time
+- WeatherRiskScorer applied to fetched observation for environment agent context
+- EvidenceTools in-process adapter extended; environment agent tool plan updated
+
+WEATHER SERVICE (backend/app/core/weather/)
+- OpenMeteoClient: archive API (historical) + forecast API (recent past_days)
+- Free provider per blueprint cost policy; WEATHER_ENABLED + timeout config
+
+STANDALONE MCP SERVER (backend/app/core/mcp/server.py)
+- FastMCP / Python MCP SDK process (stdio default, HTTP via TRACE_MCP_TRANSPORT)
+- Exposes fetch_weather_at_location + case-scoped evidence tools when TRACE_CASE_ID set
+
+CONFIG
+- WEATHER_ENABLED, WEATHER_ARCHIVE_URL, WEATHER_FORECAST_URL, WEATHER_TIMEOUT_SECONDS
+
+TESTS: +7 MCP weather tests (mocked httpx; coordinate resolution; tool registration)
+
+NOT YET IMPLEMENTED
+- Neo4j causal graph (Phase 4)
+- LangGraph package dependency (orchestrator remains Python state machine)
 - Advanced: DTW, BN, Dempster-Shafer, scenario counterfactuals
 
 NEXT WORK
