@@ -1,12 +1,15 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AnomaliesPage } from "./pages/AnomaliesPage";
+import { AuditTrailPage } from "./pages/AuditTrailPage";
 import { CaseIngestionPage } from "./pages/CaseIngestionPage";
 import { CaseOverviewPage } from "./pages/CaseOverviewPage";
 import { CasesPage } from "./pages/CasesPage";
+import { CausalGraphPage } from "./pages/CausalGraphPage";
 import { ConflictsPage } from "./pages/ConflictsPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { EvidenceExplorerPage } from "./pages/EvidenceExplorerPage";
+import { EvidenceGapsPage } from "./pages/EvidenceGapsPage";
 import { FindingsPage } from "./pages/FindingsPage";
 import { HypothesesPage } from "./pages/HypothesesPage";
 import { TimelinePage } from "./pages/TimelinePage";
@@ -26,6 +29,9 @@ export function App() {
           <Route path="conflicts" element={<ConflictsPage />} />
           <Route path="findings" element={<FindingsPage />} />
           <Route path="hypotheses" element={<HypothesesPage />} />
+          <Route path="graph" element={<CausalGraphPage />} />
+          <Route path="gaps" element={<EvidenceGapsPage />} />
+          <Route path="audit" element={<AuditTrailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

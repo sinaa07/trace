@@ -104,7 +104,54 @@ class InvestigationService:
                 "meta_summary": state.meta_summary[:1000],
             },
         )
+        self.db.flush()
+
+        # Phase 4: build evidence-linked causal graph and rescore with causal_support
+        try:
+            from app.services.graph_service import GraphService
+
+            graph_service = GraphService(self.db)
+            graph_service.build_and_persist(case_id)
+            graph_service.rescore_findings_with_causal_support(case_id)
+            self.audit.log(
+                case_id=case_id,
+                entity_type="case",
+                entity_id=case_id,
+                action="graph.built",
+                actor=actor,
+                payload={"trigger": "investigation"},
+            )
+        except Exception:
+            # Investigation succeeds even if Neo4j is unavailable
+            pass
+
         self.db.commit()
+
+        # Refresh responses after causal rescore
+        persisted = [
+            self._to_response(row) for row in self.findings.list_for_case(case_id)
+        ]
+        ranked = []
+        from app.schemas.investigation import RankingDimensionScores
+
+        for row in self.findings.list_for_case(case_id):
+            finding = self._to_response(row)
+            dims_data = row.rank_dimensions if isinstance(row.rank_dimensions, dict) else {}
+            dims = RankingDimensionScores(
+                evidence_support=float(dims_data.get("evidence_support", 0.0)),
+                temporal_consistency=float(dims_data.get("temporal_consistency", 0.0)),
+                source_reliability=float(dims_data.get("source_reliability", 0.0)),
+                causal_support=float(dims_data.get("causal_support", 0.0)),
+                evidence_completeness=float(dims_data.get("evidence_completeness", 0.0)),
+                contradiction_penalty=float(dims_data.get("contradiction_penalty", 0.0)),
+            )
+            ranked.append(
+                RankedHypothesis(
+                    finding=finding,
+                    dimensions=dims,
+                    weighted_score=float(row.rank_score or 0.0),
+                )
+            )
 
         ranked.sort(key=lambda r: r.weighted_score, reverse=True)
         persisted.sort(key=lambda f: f.rank_score or 0.0, reverse=True)

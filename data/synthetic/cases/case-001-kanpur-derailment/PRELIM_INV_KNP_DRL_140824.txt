@@ -30,7 +30,7 @@ PRELIMINARY OBSERVATIONS
 - Skid marks visible over ~180m before point of derailment
 - Last known telemetry shows speed 92-94 km/h approaching curve (restriction 45 km/h)
 - Signal KNP-S42 was GREEN at 04:46:40; train entered curve section under clear signal
-- No evidence of track sabotage at this stage
+- evidence of track sabotage as well. found possible traces of object based hindrance.
 - RPF and engineering team on site; traffic suspended on Up line
 
 ACTIONS TAKEN

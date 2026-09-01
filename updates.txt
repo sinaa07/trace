@@ -332,3 +332,51 @@ NEXT WORK
 - Phase 4: Neo4j evidence-linked causal templates
 - Optional local LLM smoke eval
 - Evidence Gaps / Audit Trail / Report UI
+
+
+--- Iteration 8 | 2026-09-01 | Phase 4 Causal Graph + Phase 5 Gaps/Audit ---
+
+PHASE PLAN (from blueprint + architecture review)
+- Phase 0–2: COMPLETE (ingestion, temporal, quality analysis, workspace UI)
+- Phase 3: COMPLETE (scorers, MCP tools, four agents, ranking, findings UI, weather MCP)
+- Phase 4: IN PROGRESS → causal graph MVP shipped this iteration
+- Phase 5 REMAINING: PDF report, finding accept/reject/review, E2E synthetic gate
+- Phase 6 (Advanced): DTW, BN, Dempster-Shafer, scenario counterfactuals — gated
+
+PHASE 4 — CAUSAL GRAPH (backend/app/core/graph/)
+- Hand-authored domain templates (templates.yaml): environment, train_driver, signalling, track
+- CausalGraphBuilder: EVENT/HYPOTHESIS/FACTOR/OUTCOME nodes; PRECEDES, ASSERTS, CONTRIBUTES_TO, CITED_BY edges
+- Edges to outcome only when findings cite supporting_evidence (evidence-linked per blueprint)
+- Neo4jGraphStore: case-scoped persist/query/shortestPath (docker-compose neo4j:7687)
+- GraphService: build, query, path trace, causal_support rescoring of rank_score
+- Wired into InvestigationService post-investigate (graph.built audit action)
+- causal_support dimension now populated in rank_dimensions when graph paths exist
+
+API
+- GET /cases/{id}/graph
+- POST /cases/{id}/graph/rebuild
+- GET /cases/{id}/graph/path?from=&to=
+- GET /cases/{id}/gaps
+- GET /cases/{id}/audit
+
+FRONTEND
+- Causal Graph page (SVG layered visualization + node detail)
+- Evidence Gaps page (missing sources, domain inputs, review flags, weather hint)
+- Audit Trail page (case audit_log timeline)
+- Sidebar routes enabled for graph, gaps, audit
+
+CONFIG
+- NEO4J_ENABLED, NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
+
+TESTS: +3 causal graph tests (builder, in-memory service)
+
+NOT YET IMPLEMENTED
+- PDF investigation report (Phase 5)
+- Finding accept/reject/review workflow (Phase 5)
+- LangGraph package (orchestrator remains Python state machine)
+- Advanced: DTW, BN, Dempster-Shafer, scenario counterfactuals
+
+NEXT WORK
+- Phase 5: ReportLab PDF report + finding review UI
+- E2E synthetic case gate (case-001 Kanpur derailment full workflow)
+- Optional Ollama smoke eval for generative findings

@@ -264,6 +264,54 @@ export interface HypothesesListResponse {
   total: number;
 }
 
+export interface GraphNode {
+  id: string;
+  label: string;
+  node_type: string;
+  properties: Record<string, unknown>;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  edge_type: string;
+  properties: Record<string, unknown>;
+}
+
+export interface CaseGraphResponse {
+  case_id: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  node_count: number;
+  edge_count: number;
+  built_from?: string | null;
+}
+
+export interface EvidenceGapsResponse {
+  case_id: string;
+  missing_source_types: string[];
+  missing_domain_inputs: string[];
+  needs_review_or_failed: Array<Record<string, unknown>>;
+  external_weather_available: boolean;
+}
+
+export interface AuditEvent {
+  audit_id: string;
+  case_id: string;
+  entity_type: string;
+  entity_id: string;
+  action: string;
+  actor: string;
+  payload: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface AuditListResponse {
+  case_id: string;
+  events: AuditEvent[];
+  total: number;
+}
+
 export interface ApiError {
   error: {
     code: string;

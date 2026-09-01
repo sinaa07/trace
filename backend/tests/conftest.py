@@ -15,6 +15,11 @@ from app.main import app
 from app.models import Base
 
 
+@pytest.fixture(autouse=True)
+def disable_neo4j_for_tests(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(settings, "neo4j_enabled", False)
+
+
 @pytest.fixture(scope="session")
 def test_data_dir() -> Path:
     return Path(__file__).resolve().parents[2] / "data" / "synthetic"
@@ -59,6 +64,7 @@ def storage_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     processed_path.mkdir()
     monkeypatch.setattr(settings, "evidence_storage_path", raw_path)
     monkeypatch.setattr(settings, "processed_storage_path", processed_path)
+    monkeypatch.setattr(settings, "neo4j_enabled", False)
     return raw_path, processed_path
 
 

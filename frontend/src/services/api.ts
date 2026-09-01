@@ -14,6 +14,9 @@ import type {
   FindingsListResponse,
   HypothesesListResponse,
   InvestigationRunResponse,
+  CaseGraphResponse,
+  EvidenceGapsResponse,
+  AuditListResponse,
   SourceType,
   TimelineResponse,
 } from "../types/case";
@@ -206,4 +209,28 @@ export async function listCaseHypotheses(
   caseId: string,
 ): Promise<HypothesesListResponse> {
   return request<HypothesesListResponse>(`/cases/${caseId}/hypotheses`);
+}
+
+export async function getCaseGraph(caseId: string): Promise<CaseGraphResponse> {
+  return request<CaseGraphResponse>(`/cases/${caseId}/graph`);
+}
+
+export async function rebuildCaseGraph(
+  caseId: string,
+): Promise<CaseGraphResponse> {
+  return request<CaseGraphResponse>(`/cases/${caseId}/graph/rebuild`, {
+    method: "POST",
+  });
+}
+
+export async function getCaseEvidenceGaps(
+  caseId: string,
+): Promise<EvidenceGapsResponse> {
+  return request<EvidenceGapsResponse>(`/cases/${caseId}/gaps`);
+}
+
+export async function listCaseAudit(
+  caseId: string,
+): Promise<AuditListResponse> {
+  return request<AuditListResponse>(`/cases/${caseId}/audit`);
 }

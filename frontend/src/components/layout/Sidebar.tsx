@@ -61,10 +61,10 @@ export const MVP_NAV_ITEMS: NavItem[] = [
   { label: "Conflicts", path: "/conflicts" },
   { label: "Findings", path: "/findings" },
   { label: "Hypotheses", path: "/hypotheses" },
-  { label: "Causal Graph", disabled: true, badge: "Soon" },
-  { label: "Evidence Gaps", disabled: true, badge: "Soon" },
+  { label: "Causal Graph", path: "/graph" },
+  { label: "Evidence Gaps", path: "/gaps" },
   { label: "Report", disabled: true, badge: "Soon" },
-  { label: "Audit Trail", disabled: true, badge: "Soon" },
+  { label: "Audit Trail", path: "/audit" },
 ];
 
 export function navItemsForPath(pathname: string): NavItem[] {

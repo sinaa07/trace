@@ -1,0 +1,40 @@
+# Hand-authored domain causal templates (Phase 4 MVP).
+# Edges are materialized only when agent findings cite supporting evidence.
+
+outcome:
+  id: incident_outcome
+  label: Incident / accident outcome
+  node_type: OUTCOME
+
+domains:
+  environment:
+    factor_id: environmental_conditions
+    factor_label: Environmental / weather conditions
+    node_type: FACTOR
+    edges:
+      - to: incident_outcome
+        type: CONTRIBUTES_TO
+
+  train_driver:
+    factor_id: train_driver_operations
+    factor_label: Train / driver operational factors
+    node_type: FACTOR
+    edges:
+      - to: incident_outcome
+        type: CONTRIBUTES_TO
+
+  signalling:
+    factor_id: signalling_control
+    factor_label: Signalling / control system factors
+    node_type: FACTOR
+    edges:
+      - to: incident_outcome
+        type: CONTRIBUTES_TO
+
+  track:
+    factor_id: track_infrastructure
+    factor_label: Track / infrastructure condition
+    node_type: FACTOR
+    edges:
+      - to: incident_outcome
+        type: CONTRIBUTES_TO

@@ -33,5 +33,11 @@ class Settings(BaseSettings):
     weather_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
     weather_timeout_seconds: float = 20.0
 
+    # Neo4j causal graph (Phase 4)
+    neo4j_enabled: bool = True
+    neo4j_uri: str = "bolt://localhost:7687"
+    neo4j_user: str = "neo4j"
+    neo4j_password: str = "trace_dev_password"
+
 
 settings = Settings()
