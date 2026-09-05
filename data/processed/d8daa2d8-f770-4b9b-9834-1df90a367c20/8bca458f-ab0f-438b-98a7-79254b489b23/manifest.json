@@ -1,0 +1,19 @@
+{
+  "evidence_id": "8bca458f-ab0f-438b-98a7-79254b489b23",
+  "case_id": "d8daa2d8-f770-4b9b-9834-1df90a367c20",
+  "filename": "GPS_trace_18447_partial.csv",
+  "record_count": 14,
+  "invalid_count": 0,
+  "parser_version": "1.0.0",
+  "profile_id": "other_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.275,
+  "match_reasons": [
+    "header_match:timestamp",
+    "declared_override:other",
+    "best_alternative:train_telemetry_v1:0.55"
+  ],
+  "needs_review": true,
+  "warnings": [],
+  "event_count": 14
+}

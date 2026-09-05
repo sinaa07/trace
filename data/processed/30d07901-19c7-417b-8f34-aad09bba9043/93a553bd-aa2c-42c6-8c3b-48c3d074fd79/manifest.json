@@ -1,0 +1,23 @@
+{
+  "evidence_id": "93a553bd-aa2c-42c6-8c3b-48c3d074fd79",
+  "case_id": "30d07901-19c7-417b-8f34-aad09bba9043",
+  "filename": "signal_log.csv",
+  "record_count": 3,
+  "invalid_count": 0,
+  "parser_version": "1.0.0",
+  "profile_id": "signal_log_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.9,
+  "match_reasons": [
+    "header_match:timestamp",
+    "header_match:signal_id",
+    "header_match:state",
+    "header_match:train_id",
+    "required_any_headers_hit",
+    "filename_pattern:*signal*",
+    "content_hint:RED",
+    "content_hint:GREEN"
+  ],
+  "needs_review": false,
+  "warnings": []
+}

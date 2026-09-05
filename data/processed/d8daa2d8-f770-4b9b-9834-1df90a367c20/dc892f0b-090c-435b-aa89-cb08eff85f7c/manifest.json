@@ -1,0 +1,19 @@
+{
+  "evidence_id": "dc892f0b-090c-435b-aa89-cb08eff85f7c",
+  "case_id": "d8daa2d8-f770-4b9b-9834-1df90a367c20",
+  "filename": "18447_run_sheet_14AUG24.csv",
+  "record_count": 9,
+  "invalid_count": 9,
+  "parser_version": "1.0.0",
+  "profile_id": "train_telemetry_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.0,
+  "match_reasons": [
+    "required_any_headers_miss",
+    "filename_no_match",
+    "low_confidence_match"
+  ],
+  "needs_review": true,
+  "warnings": [],
+  "event_count": 0
+}

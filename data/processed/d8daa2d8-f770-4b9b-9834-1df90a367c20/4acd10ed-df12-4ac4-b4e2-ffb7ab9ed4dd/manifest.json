@@ -1,0 +1,17 @@
+{
+  "evidence_id": "4acd10ed-df12-4ac4-b4e2-ffb7ab9ed4dd",
+  "case_id": "d8daa2d8-f770-4b9b-9834-1df90a367c20",
+  "filename": "PRELIM_INV_KNP_DRL_140824.txt",
+  "record_count": 35,
+  "invalid_count": 0,
+  "parser_version": "1.0.0",
+  "profile_id": "other_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.275,
+  "match_reasons": [
+    "header_match:text"
+  ],
+  "needs_review": false,
+  "warnings": [],
+  "event_count": 35
+}

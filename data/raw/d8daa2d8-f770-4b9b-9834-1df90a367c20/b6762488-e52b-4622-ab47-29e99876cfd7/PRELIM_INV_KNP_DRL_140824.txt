@@ -1,0 +1,42 @@
+PRELIMINARY ACCIDENT REPORT
+Reference: KNP/DRL/2024/0814
+Date of report: 14-Aug-2024 09:30 hrs
+Reporting officer: SI R.K. Sharma, GRP Kanpur
+
+INCIDENT SUMMARY
+At approximately 04:48 hrs on 14-Aug-2024, goods train 18447 (CNB-LKO freight)
+derailed at km 142.8 near KNP Curve Section between Ishwariganj and Fatehpur
+on the Kanpur-Lucknow main line.
+
+ON-GROUND SCENARIO
+- Type: Derailment (8 wagons off track, 3 overturned)
+- Track condition: Wet due to overnight rain; no visible track defect at point of derailment
+- Train consist: 42 loaded wagons (coal), 2 brake vans, WDG-4 loco #12341
+- Point of derailment: Up main line, left-hand curve R=580m, permanent speed restriction 45 km/h
+
+CASUALTIES
+- Passengers: N/A (freight train)
+- Railway staff: Driver (Sh. Vijay Kumar) - present at scene, conscious, lacerations on forehead and left arm, shifted to UHM Hospital Kanpur
+- Assistant Driver (Sh. Mohan Lal) - present, uninjured
+- Guard (Sh. Pradeep Singh) - present, minor bruises
+- Public: None reported
+
+DRIVER STATUS
+- Driver PRESENT at scene. Did not leave. Statement recorded at 06:15 hrs.
+- Driver reported "felt sudden lateral jerk, applied emergency brake immediately"
+- Breathalyser: Negative (conducted 05:40 hrs)
+
+PRELIMINARY OBSERVATIONS
+- Skid marks visible over ~180m before point of derailment
+- Last known telemetry shows speed 92-94 km/h approaching curve (restriction 45 km/h)
+- Signal KNP-S42 was GREEN at 04:46:40; train entered curve section under clear signal
+- No evidence of track sabotage at this stage
+- RPF and engineering team on site; traffic suspended on Up line
+
+ACTIONS TAKEN
+- Medical aid to driver
+- Site secured
+- Divisional inquiry ordered
+- Black box / event recorder custody chain initiated
+
+Report status: PRELIMINARY - subject to Commissioner of Railway Safety inquiry

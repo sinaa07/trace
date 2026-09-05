@@ -1,0 +1,25 @@
+{
+  "evidence_id": "029969a6-b540-4d0f-a450-65fc9af2caeb",
+  "case_id": "d8daa2d8-f770-4b9b-9834-1df90a367c20",
+  "filename": "CTC_export_signals_KanpurDiv_20240814.csv",
+  "record_count": 13,
+  "invalid_count": 0,
+  "parser_version": "1.0.0",
+  "profile_id": "signal_log_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.95,
+  "match_reasons": [
+    "header_match:timestamp",
+    "header_match:signal_id",
+    "header_match:state",
+    "header_match:train_id",
+    "required_any_headers_hit",
+    "filename_pattern:*signal*",
+    "content_hint:RED",
+    "content_hint:GREEN",
+    "content_hint:YELLOW"
+  ],
+  "needs_review": false,
+  "warnings": [],
+  "event_count": 13
+}

@@ -1,0 +1,18 @@
+{
+  "evidence_id": "6b16c7f6-e546-4bb3-a033-8150fbacda03",
+  "case_id": "d8daa2d8-f770-4b9b-9834-1df90a367c20",
+  "filename": "route_coords_KNP_section.csv",
+  "record_count": 7,
+  "invalid_count": 0,
+  "parser_version": "1.0.0",
+  "profile_id": "other_v1",
+  "profile_version": "1.0.0",
+  "match_score": 0.0,
+  "match_reasons": [
+    "declared_override:other",
+    "best_alternative:signal_log_v1:0.22"
+  ],
+  "needs_review": true,
+  "warnings": [],
+  "event_count": 7
+}
